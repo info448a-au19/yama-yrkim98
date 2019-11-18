@@ -57,7 +57,8 @@
         android:layout_gravity="center"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        style="@android:style/TextAppearance.Medium"/>
+        style="@android:style/TextAppearance.Medium"
+        android:layout_weight="1"/>
 
     <View
         android:id="@+id/divider"

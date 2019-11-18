@@ -7,19 +7,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.telephony.SmsManager
-import android.text.Editable
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_create_msg.*
-import java.net.URI
 
-
-class MessageInstance() {
+class MessageInstance {
     var destination: String? = null
     var text: String? = null
 
@@ -33,7 +28,7 @@ class MessageInstance() {
         messager.sendTextMessage(destination, null, text, int, null)
         Snackbar.make(
             view,
-            "Sent Message Sucessfully to: " + destination,
+            "Sent Message to: " + destination,
             Snackbar.LENGTH_LONG
         ).show()
     }
@@ -44,15 +39,15 @@ class CreateMessage: AppCompatActivity() {
     companion object{
         const val ACTION_SMS_STATUS = "edu.uw.yrkim98.yama.ACTION_SMS_STATUS"
     }
-    val REQUEST_PHONE_NUM = 1
-    var contactURI: Uri? = null
+    val tracker = 1
+    private var contactURI: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_msg)
 
 
         //On click listener for Send Message button
-        findViewById<Button>(R.id.button_chatbox_send).setOnClickListener {
+        button_chatbox_send.setOnClickListener {
             //Start a Message Instance
             var msg = MessageInstance()
             //Set Message Data
@@ -65,20 +60,18 @@ class CreateMessage: AppCompatActivity() {
                 "number",
                 edittext_number.text.toString()
             ).putExtra("message", edittext_chat.text.toString())
-            //SENDDDDDDDD ITTTTTTTTTTTTTTT
             msg.sendMessage(PendingIntent.getBroadcast(applicationContext, 0, intent, 0),
-                findViewById(R.id.edittext_chat))
-            //Clear that shit
+                edittext_chat)
             edittext_chat.setText("")}
 
 
         //Got help on this from https://www.youtube.com/watch?v=NLRSh-JTFrA
         //On click listener for contacts Selection
-        findViewById<ImageView>(R.id.contacts_pic).setOnClickListener {
+        contacts_pic.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE
             if (intent.resolveActivity(packageManager) != null) {
-                startActivityForResult(intent, REQUEST_PHONE_NUM)
+                startActivityForResult(intent, tracker)
             }
 
 
@@ -86,7 +79,7 @@ class CreateMessage: AppCompatActivity() {
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_PHONE_NUM && resultCode == Activity.RESULT_OK) {
+        if (requestCode == tracker && resultCode == Activity.RESULT_OK) {
             contactURI = data!!.data
             val list = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
             val cursor = contentResolver.query(contactURI as Uri, list, null, null, null)

@@ -2,11 +2,8 @@ package edu.uw.yrkim98.yama
 
 import android.app.PendingIntent
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_create_msg.*
 import kotlinx.android.synthetic.main.activity_read_msg.*
 
 class ReadMessage: AppCompatActivity() {
@@ -32,7 +29,6 @@ class ReadMessage: AppCompatActivity() {
             msg.sendMessage(
                 PendingIntent.getBroadcast(applicationContext, 0, intent, 0),
                 r_edittext_chat)
-            //Clear that shit
             r_edittext_chat.setText("")}
         loadInstance(getIntent())
 
