@@ -5,7 +5,8 @@
     android:orientation="horizontal"
     android:weightSum="1"
     android:layout_marginRight="20dp"
-    android:layout_marginLeft="20dp">
+    android:layout_marginLeft="20dp"
+    >
     <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -27,7 +28,7 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/msg_time"
+                android:id="@+id/msg_date"
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
@@ -41,15 +42,12 @@
         android:layout_height="match_parent"
         android:text="Message.body" />
 
-        <TextView
-            android:id="@+id/line"
-            style="?android:attr/listSeparatorTextViewStyle"
+        <View
+            android:id="@+id/divider"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_below="@+id/connect_help"
-            android:background="#000"
-            android:gravity="center_horizontal"
-            android:paddingTop="5dip" />
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            />
 
     </LinearLayout>
 

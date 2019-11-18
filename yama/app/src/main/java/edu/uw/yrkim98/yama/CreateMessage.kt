@@ -15,7 +15,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_create_msg.edittext_chat;
+import kotlinx.android.synthetic.main.activity_create_msg.*
 import java.net.URI
 
 
@@ -57,19 +57,19 @@ class CreateMessage: AppCompatActivity() {
             var msg = MessageInstance()
             //Set Message Data
             msg.setMessage(
-                findViewById<TextView>(R.id.edittext_number).text.toString(),
-                findViewById<TextView>(R.id.edittext_chat).text.toString()
+                edittext_number.text.toString(),
+                edittext_chat.text.toString()
             )
             //Create Intent for Message
             val intent = Intent(ACTION_SMS_STATUS).putExtra(
                 "number",
-                findViewById<TextView>(R.id.edittext_number).text.toString()
-            ).putExtra("message", findViewById<TextView>(R.id.edittext_chat).text.toString())
+                edittext_number.text.toString()
+            ).putExtra("message", edittext_chat.text.toString())
             //SENDDDDDDDD ITTTTTTTTTTTTTTT
             msg.sendMessage(PendingIntent.getBroadcast(applicationContext, 0, intent, 0),
                 findViewById(R.id.edittext_chat))
             //Clear that shit
-            findViewById<TextView>(R.id.edittext_chat).text = ""}
+            edittext_chat.setText("")}
 
 
         //Got help on this from https://www.youtube.com/watch?v=NLRSh-JTFrA
@@ -91,7 +91,7 @@ class CreateMessage: AppCompatActivity() {
             val list = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
             val cursor = contentResolver.query(contactURI as Uri, list, null, null, null)
             if (cursor?.moveToFirst() as Boolean) {
-                findViewById<EditText>(R.id.edittext_number).setText(
+                edittext_number.setText(
                     cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)))
             }
         }

@@ -1,9 +1,11 @@
 package edu.uw.yrkim98.yama
 
 import android.Manifest
+import android.content.ContentProvider
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Message
 import android.provider.Telephony
@@ -16,10 +18,15 @@ import android.widget.SimpleCursorAdapter
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_read_msg.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,10 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        //Setup the recycler view
-        val msgRecyclerView = findViewById<RecyclerView>(R.id.msg_recycler_view)
-        msgRecyclerView.layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
-        msgRecyclerView.adapter = MessageAdapter(generateFakeMsg(), applicationContext)
+
         //Check for send permissions
         var permissionCheck = ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.SEND_SMS)
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -50,31 +54,47 @@ class MainActivity : AppCompatActivity() {
                 100
             )
         }
+        permissionCheck = ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_SMS)
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf<String>(Manifest.permission.READ_SMS),
+                100
+            )
+        }
+
+        //Setup the recycler view
+        val msgRecyclerView = findViewById<RecyclerView>(R.id.msg_recycler_view)
+        msgRecyclerView.addFooterView
+        msgRecyclerView.layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
+        msgRecyclerView.adapter = MessageAdapter(getDeviceMsgs(), applicationContext)
+
 
 
 
     }
-
-    private fun generateFakeMsg(): List<edu.uw.yrkim98.yama.Message> {
-        val from = listOf(
-            "bob", "dylan", "deanna", "kent")
-        val msg = listOf(
-            "This is truly amazing, unexpected...",
-            "Yes, yes, yes! It is happening!",
-            "Follow our blog to learn more...",
-            "Well, it supposed to happen...")
-        val times = listOf(
-            "13:42",
-            "16:16",
-            "12:34",
-            "20:20")
-        val emailList = mutableListOf<edu.uw.yrkim98.yama.Message>()
-        for (i in 0..10) {
-            emailList.add(
-                Message(from.random(), msg.random(), times.random())
-            )
+    fun getDeviceMsgs(): List<edu.uw.yrkim98.yama.Message> {
+        var uri = Uri.parse("content://sms/")
+        var provider = this.contentResolver
+        var cursor = provider.query(uri, null, null, null, null)
+        var list = mutableListOf<edu.uw.yrkim98.yama.Message>()
+        if (cursor != null /*sometimes this is null.*/){
+            if (cursor.moveToFirst()) {
+                for (i in 0 until cursor.getCount()) {
+                    var message = edu.uw.yrkim98.yama.Message(
+                        cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY)),
+                        SimpleDateFormat("MM/dd/yyyy").format(
+                            Date(cursor.getString(cursor.getColumnIndex(Telephony.Sms.DATE)).toLong())),
+                        SimpleDateFormat("hh:mm a").format(
+                            Date(cursor.getString(cursor.getColumnIndex(Telephony.Sms.DATE)).toLong())))
+                    list.add(message)
+                    cursor.moveToNext()
+                }
+            }
         }
-        return emailList
+        return list
+
     }
     
 
@@ -96,16 +116,34 @@ class MainActivity : AppCompatActivity() {
 
 }
 
-data class Message(val from: String, val message: String, val time: String)
+
+data class Message(val from: String, val message: String, val date: String, val time:String)
 
 class MessageAdapter(private val messageList: List<edu.uw.yrkim98.yama.Message>, private val context: Context):
     RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
 
 
+
     override fun onBindViewHolder(holder: MessageAdapter.MessageViewHolder, position: Int) {
         holder.fromText.text = messageList[position].from
         holder.msgText.text = messageList[position].message
-        holder.timeText.text = messageList[position].time
+        holder.dateText.text = messageList[position].date
+        var onClickListener = View.OnClickListener { v ->
+            val inte = Intent(context, ReadMessage::class.java).apply {
+                putExtra("message", messageList[position].message)
+                putExtra("from", messageList[position].from)
+                putExtra("date", messageList[position].date)
+                putExtra("time", messageList[position].time)
+
+
+            }
+            startActivity(context, inte, null)
+        }
+        with(holder.itemView) {
+            setOnClickListener(onClickListener)
+        }
+
+
 
 
 
@@ -119,7 +157,8 @@ class MessageAdapter(private val messageList: List<edu.uw.yrkim98.yama.Message>,
     inner class MessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val fromText: TextView = view.findViewById(R.id.message_from)
         val msgText: TextView = view.findViewById(R.id.message_body)
-        val timeText: TextView = view.findViewById(R.id.msg_time)
+        val dateText: TextView = view.findViewById(R.id.msg_date)
     }
+
 }
 

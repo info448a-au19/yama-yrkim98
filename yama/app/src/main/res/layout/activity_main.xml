@@ -23,7 +23,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/msg_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:footerDividersEnabled="true"
+        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

@@ -29,9 +29,22 @@
         <activity
             android:name=".CreateMessage"
             android:label="create"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="edu.uw.yrkim98.yama.ACTION_SMS_STATUS" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".ReadMessage"
+            android:label="read"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
