@@ -41,7 +41,7 @@ class RecieveMessage: BroadcastReceiver() {
 
     fun createNotification(message: String, from: String, context: Context, channelID: String, manager: NotificationManager) {
         val intent = Intent("")
-        val pIntent = PendingIntent.getActivity(this, System.currentTimeMillis().toInt(), intent, 0)
+        val pIntent = PendingIntent.getActivity(context, System.currentTimeMillis().toInt(), intent, 0)
         val notification = NotificationCompat.Builder(context,
             channelID)
             .setContentTitle("New Message from " + from)
